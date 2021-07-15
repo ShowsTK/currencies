@@ -1,0 +1,71 @@
+@import 'vars';
+@import 'mixins';
+
+.modal {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  align-items: center;
+  position: fixed;
+  z-index: 1900;
+  font-size: $font-size-base;
+  &-background {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: rgba(10,10,10,.8);
+    display: flex;
+    justify-content: center;
+  }
+  &-box {
+    text-align: center;
+    margin: 10% auto auto;
+    max-height: 90vh;
+    background-color: #fff;
+    box-shadow: 0 2px 3px rgba(10,10,10,.1), 0 0 0 1px rgba(10,10,10,.1);
+    border-radius: 5px;
+    width: 815px;
+  }
+  &-content {
+    padding: 75px 115px ;
+    color: $font-color-base;
+    position: relative;
+  }
+  &-close-btn {
+    @include WeqH(30px);
+    @include centerChild();
+    border-radius: 15px;
+    background-color: #878787;
+    box-shadow: 0 0 7px rgba(0, 0, 0, 0.5);
+    border: none;
+    outline: none;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    &:hover {
+      background-color: #bb4949;
+    }
+  }
+  .buttons-modal {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 74px;
+  }
+  .field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    &__txt {
+      width: 254px;
+      padding: 0 20px;
+      text-align: center;
+      outline: none;
+      border: none;
+    }
+  }
+}
+

@@ -1,0 +1,14 @@
+@import '../styles/vars';
+
+@mixin WeqH($width-height: 0) {
+  width: $width-height;
+  height: $width-height;
+}
+
+@mixin centerChild($fsize: $font-size-base) {
+  display: flex;
+  & > * {
+    margin: auto;
+    font-size: $fsize !important;
+  }
+}
