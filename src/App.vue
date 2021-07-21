@@ -39,6 +39,9 @@
         </form>
       </section>
       <section id="data">
+        <pgnr :items="ratesData"
+              @change-page="changePage"
+        ></pgnr>
         <table>
           <thead>
             <tr>
@@ -49,7 +52,7 @@
               </thf>
             </tr>
           </thead>
-          <tr v-for="(rate) in ratesData"
+          <tr v-for="(rate) in shownData"
               :key="rate.ID"
               @click.prevent="activeRowId = rate.ID">
             <td :class="{active: activeRowId === rate.ID}">{{rate.ID}}</td>
@@ -94,16 +97,20 @@
   import TableHeaderField from './components/TableHeaderField';
   import ConfirmBox from './components/Confirm';
   import FormItem from './components/FormItem';
+  import Paginator from './components/Paginator';
 
   export default {
     name: 'app',
     components: {'thf': TableHeaderField,
                   'confirm-box': ConfirmBox,
-                  'form-item': FormItem
+                  'form-item': FormItem,
+                  'pgnr': Paginator
     },
     data () {
       return {
         ratesData: [],
+        perPage: 10,
+        shownData: [],
         loading: false,
         isError: false,
         isConfirmBox: false,
@@ -138,12 +145,16 @@
       if(sessionStorage.getItem('currencies')) {
         try {
           this.ratesData = JSON.parse(sessionStorage.getItem('currencies'));
+          this.shownData = this.ratesData.slice(0, this.perPage);
         } catch(e) {
           sessionStorage.removeItem('currencies');
         }
       } else {
         this.load();
       }
+    },
+    beforeUpdate() {
+      this.shownData = this.ratesData;
     },
     methods: {
       load() {
@@ -156,7 +167,7 @@
             }
             const parsedData = JSON.stringify(this.ratesData);
             sessionStorage.setItem('currencies', parsedData);
-            if(!this.isEmptyObject(this.sortedParams)) {
+            if(this.isFiltered) {
               this.sort();
             }
           }, 800)
@@ -172,11 +183,12 @@
           .then(response => {
             this.ratesData = response.data;
           })
+          .finally(() => {
+            this.loading = false})
           .catch(error => {
             console.log(error);
             this.isError = true;
           })
-          .finally(() => (this.loading = false));
       },
       saveChangedData() {
         let currentData = this.getCurrentSource();
@@ -224,7 +236,7 @@
       },
       //сортирует объект по его свойствам (по нескольким, если field - объект)
       compare(field, order) {
-        var len = arguments.length;
+        let len = arguments.length;
         if(len === 0) {
           return (a, b) => (a < b && -1) || (a > b && 1) || 0;
         }
@@ -291,9 +303,6 @@
         if (this.isFiltered) {
           this.search(this.searchText);
         }
-        if(!this.isEmptyObject(this.sortedParams)) {
-          this.sort();
-        }
         this.isItemForm = false;
       },
       getCurrentSource() {
@@ -319,6 +328,9 @@
         this.delItemId = 0;
         this.confirmBoxToggle();
       },
+      changePage(items) {
+        this.shownData = items;
+      }
     }
   }
 </script>
