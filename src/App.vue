@@ -158,37 +158,46 @@
     },
     methods: {
       load() {
-        this.getRates();
-        this.searchText = '';
-        if (!this.isError) {
-          setTimeout(() => {
-            for(let idx in this.ratesData) {
-              this.$set(this.ratesData[idx],'ID', +idx + 1);
+        this.getRates()
+          .then(response => {
+            this.ratesData = response.data;
+            this.searchText = '';
+            if (!this.isError) {
+              for (let idx in this.ratesData) {
+                this.$set(this.ratesData[idx], 'ID', +idx + 1);
+              }
+              const parsedData = JSON.stringify(this.ratesData);
+              sessionStorage.setItem('currencies', parsedData);
+              if (this.isFiltered) {
+                this.sort();
+              }
             }
-            const parsedData = JSON.stringify(this.ratesData);
-            sessionStorage.setItem('currencies', parsedData);
-            if(this.isFiltered) {
-              this.sort();
-            }
-          }, 800)
-        }
+          })
       },
       cloneObject(obj) {
         return JSON.parse(JSON.stringify(obj));
       },
       getRates() {
         this.loading = true;
-        axios
-          .get('https://www.nbrb.by/api/exrates/rates?periodicity=0')
-          .then(response => {
-            this.ratesData = response.data;
-          })
-          .finally(() => {
-            this.loading = false})
-          .catch(error => {
-            console.log(error);
-            this.isError = true;
-          })
+        return new Promise((resolve, reject) => {
+          axios.get('https://www.nbrb.by/api/exrates/rates?periodicity=0')
+            .then(response => resolve(response))
+            .catch(error => {
+              console.log(error);
+              this.isError = true;
+              reject(new Error(error))})
+            .finally(() => {
+              this.loading = false})
+            })
+            /*.then(response => {
+              this.ratesData = response.data;
+            })
+            .finally(() => {
+              this.loading = false})
+            .catch(error => {
+              console.log(error);
+              this.isError = true;
+            })*/
       },
       saveChangedData() {
         let currentData = this.getCurrentSource();
