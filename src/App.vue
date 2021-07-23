@@ -153,9 +153,6 @@
         this.load();
       }
     },
-    beforeUpdate() {
-      this.shownData = this.ratesData;
-    },
     methods: {
       load() {
         this.getRates()
@@ -242,6 +239,7 @@
         } else {
           this.isFiltered = true;
         }
+        this.shownData = this.ratesData;
       },
       //сортирует объект по его свойствам (по нескольким, если field - объект)
       compare(field, order) {
